@@ -53,10 +53,10 @@ we have the following directory structure:
 
     2/3
     
-Fast clean and effective. *pit* collect all `test-*.js` files from current 
-directory and run each as separate process. If test throws exception - it fails.
-Passed tests that that not print not appear in the log by default, but will be 
-counted in the total result.
+Fast clean and effective. *pit* collect all `test-*.js` files from directory 
+where it is and run each as separate process. If test throws exception - it 
+fails. Passed tests that that not print not appear in the log by default, but 
+will be counted in the total result.
 
 ## Advanced usage
 
@@ -69,13 +69,17 @@ All parameters separates by space. Options are preceded by double dash (`--`).
 Directories... just write it. Order of options and directories is not 
 important.
 
-### Directories, prefixes, extensions and host interpreter
+### Directories, prefixes, extensions, root and host interpreter
 
-Current dir is cool. But *pit* can collect the tests of those directories that 
+One dir is cool. But *pit* can collect the tests of those directories that 
 you specify. Note that *pit* is not looking in the directories recursively.
 
     node run.js ../../other-dir tests tests/basic tests/advanced
-    
+
+If you want to set to another directory as "root", use `root` parameter.
+
+    node run.js --root=../tests
+
 By default *pit* searches for files with names `test-*.js` and runs they with
 `node`. This behavior can be changed using options `prefix`, `ext` and `host`.
 
