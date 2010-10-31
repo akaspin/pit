@@ -322,21 +322,12 @@ Runner.prototype.run = function() {
      return this._params;
  });
  Opts.prototype.__defineGetter__("usage", function() {
-     function trail(str, max) {
-         for (var i = 0, t = "  "; i < max - str.length; i++) {
-             t += " ";
-         }
-         return str + t;
-     }
      var usage = this._synopsis + "\n\n";
-     var maxlength = Object.keys(this._opts).reduce(function(max, name) {
-         return name.length > max ? name.length : max;
-     }, 0);
      for (var k in this._opts) {
-         usage += "  --" + trail(k, maxlength) + this._opts[k].message + "\n";
+         usage += this._opts[k].message + "\n    --" + 
+                 k + "=" + this._opts[k].value + "\n";
      }
      return usage;
-     
  });
 
  if (!module.parent) {
