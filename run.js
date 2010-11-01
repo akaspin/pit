@@ -106,19 +106,41 @@ exports.hook = hook;
 
 // Option parser
 var opts = tav = { };
+
+//Arguments
 Object.defineProperty(tav, "args", {
  value : [],
  enumerable : false
 });
+
 Object.defineProperty(tav, "set", {
+ /**
+  * Sets options.
+  * @param spec Specification
+  * @param banner Banner
+  * @param strict Assume unexpected params as error. 
+  */
  value : function(spec, banner, strict) {
+     spec = spec || {};
+     banner = banner || "Usage:";
      var self = this;
      var incoming = process.argv.slice(2); // incoming params
+
+     /**
+      * Returns extra items frob b
+      * @param a
+      * @param b
+      * @returns {Array}
+      */
      var arrayDiff = function(a, b) {
          return b.filter(function(i) {
              return a.indexOf(i) == -1;
          });
      };
+     /**
+      * Check conditions. If help setted - always exit.
+      * @param parsed Parsed specs
+      */
      var check = function(parsed) {
          var end = false, message = "", code = 0, outer = console.log;
          var setted = Object.keys(self);
@@ -139,6 +161,9 @@ Object.defineProperty(tav, "set", {
              message += "Unexpected options:\n    --"
                      + unexpected.join("\n    --") + "\n";
          }
+         message += (message.length ? 
+                 "\nRun with --help for more info" : "");
+         
          if (strict && message.length) {
              end = true;
              code = 1;
@@ -150,16 +175,16 @@ Object.defineProperty(tav, "set", {
              end = true;
              code = 0;
              outer = console.log;
+             message = Object.keys(parsed).reduce(function(msg, k) {
+                 return msg + parsed[k].note + "\n    --" + k
+                 + (parsed[k].req ? " *required\n" : "\n");
+                 }, "") + "Help. This message.\n    --help\n";
          }
          
          if (end) {
              // exiting
              outer(banner + "\n");
              outer(message);
-             outer(Object.keys(parsed).reduce(function(msg, k) {
-                 return msg + parsed[k].note + "\n    --" + k
-                        + (parsed[k].req ? " *required\n" : "\n");
-             }, ""));
              process.exit(code);
          }
      };
@@ -194,8 +219,11 @@ Object.defineProperty(tav, "set", {
                  // Boolean
                  var value = true;
              } else {
-                 var value = numRe.test(tokens[1]) ?
-                         parseFloat(tokens[1]) : tokens[1]; 
+                 var value = tokens.length > 2 ?
+                         tokens.slice(1).join('=') : tokens[1];
+                 if (numRe.test(value)) {
+                     value = parseFloat(value); 
+                 }
              }
              self[name] = value;
          } else {
@@ -210,7 +238,6 @@ Object.defineProperty(tav, "set", {
  enumerable : false,
  configurable : false
 });
-
 /**
  * Collects tests from opts.args. Returns Array of
  * tests in following format:
